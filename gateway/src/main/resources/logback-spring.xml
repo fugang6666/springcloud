@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--此配置文件必须命名为logback-spring.xml，原因是指定SpringBoot的spring.profiles.active项后，
+        logback.xml的加载顺序在application.properties之前，
+        导致项目根目录下出现LOG_HOME_IS_UNDEFINED文件夹-->
+
+    <!--LOG_HOME
+            日志文件存放路径，建议使用绝对路径，否则会生成到tomcat的bin目录下
+    -->
+    <springProperty scope="context" name="LOG_HOME" source="logback.home"/>
+
+    <property name="LOG_LEVEL" value="INFO"/>
+
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %-5level [%-20.-20class{0}:%-4line] %msg%n"/>
+
+    <property name="CONSOLE_PATTERN" value="%magenta(%d{yyyy-MM-dd HH:mm:ss}) %highlight(%-5level) [%boldYellow(%-20.-20class{0}):%boldGreen(%-4line)] %msg%n"/>
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="debug_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/debug.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="info_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="warn_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/warn.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="error_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--logger
+            用于输出的对象，例如java文件中getLogger("app")即获得name为app的logger
+        name
+            可指定为包名或类的全限定名，例如name="app"中，所有未声明level的app.*都将继承app的level
+        addtivity
+            是否附加上级logger的appender-ref，即上级logger将重新输出一遍，默认为true
+    -->
+    <logger name="com.kbs.pay" level="DEBUG" addtivity="false">
+        <appender-ref ref="debug_file"/>
+        <appender-ref ref="info_file"/>
+        <appender-ref ref="warn_file"/>
+        <appender-ref ref="error_file"/>
+    </logger>
+
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="stdout"/>
+    </root>
+
+</configuration>

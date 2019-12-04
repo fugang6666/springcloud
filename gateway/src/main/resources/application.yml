@@ -1,0 +1,49 @@
+server:
+  port: 8098
+spring:
+  application:
+    name: service-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+#      routes:
+#      - id: limit_route
+#        uri: lb://service-canteen #  lb://consumer-service lb 代表从注册中心获取服务，且已负载均衡方式转发
+#        predicates:
+#        - Path=/**/**
+#        filters:
+#        #- StripPrefix=1 #表示路由时会去除一位
+#        - name: Hystrix
+#          args:
+#            name: fallbackcmd
+#            fallbackUri: forward:/defaultfallback #这里是服务降级，调用的方法
+
+# Hystrix 配置
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000
+    fallbackcmd:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 20000 # Hystrix 的 fallbackcmd 时间
+  threadpool:
+    default:
+      coreSize: 100 # Hystrix 更改默认并发数配置
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+logging:
+  level:
+    # log 级别
+    org.springframework.cloud.gateway: debug
+
